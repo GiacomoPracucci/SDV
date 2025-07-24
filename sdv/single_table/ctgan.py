@@ -286,7 +286,7 @@ class CTGANSynthesizer(LossValuesMixin, MissingModuleMixin, BaseSingleTableSynth
 
         return self._data_processor.transform(data)
 
-    def _fit(self, processed_data):
+    def _fit(self, processed_data, callback = None):
         """Fit the model to the table.
 
         Args:
@@ -297,7 +297,7 @@ class CTGANSynthesizer(LossValuesMixin, MissingModuleMixin, BaseSingleTableSynth
 
         transformers = self._data_processor._hyper_transformer.field_transformers
         discrete_columns = detect_discrete_columns(self.metadata, processed_data, transformers)
-        self._model = CTGAN(**self._model_kwargs)
+        self._model = CTGAN(**self._model_kwargs, callback=callback)
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore', message='.*Attempting to run cuBLAS.*')
             self._model.fit(processed_data, discrete_columns=discrete_columns)
