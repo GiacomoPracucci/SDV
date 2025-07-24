@@ -606,7 +606,7 @@ class BaseSynthesizer:
 
         return preprocess_data
 
-    def _fit(self, processed_data):
+    def _fit(self, processed_data, callback=None):
         """Fit the model to the table.
 
         Args:
@@ -615,7 +615,7 @@ class BaseSynthesizer:
         """
         raise NotImplementedError()
 
-    def fit_processed_data(self, processed_data):
+    def fit_processed_data(self, processed_data, callback):
         """Fit this model to the transformed data.
 
         Args:
@@ -634,14 +634,14 @@ class BaseSynthesizer:
 
         check_synthesizer_version(self, is_fit_method=True, compare_operator=operator.lt)
         if not processed_data.empty:
-            self._fit(processed_data)
+            self._fit(processed_data, callback=callback)
 
         self._fitted = True
         self._fitted_date = datetime.datetime.today().strftime('%Y-%m-%d')
         self._fitted_sdv_version = getattr(version, 'community', None)
         self._fitted_sdv_enterprise_version = getattr(version, 'enterprise', None)
 
-    def fit(self, data):
+    def fit(self, data, callback = None):
         """Fit this model to the original data.
 
         Args:
@@ -665,7 +665,7 @@ class BaseSynthesizer:
         self._random_state_set = False
         is_converted = self._store_and_convert_original_cols(data)
         processed_data = self.preprocess(data)
-        self.fit_processed_data(processed_data)
+        self.fit_processed_data(processed_data=processed_data, callback=callback)
         if is_converted:
             data.columns = self._original_columns
 
